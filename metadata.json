@@ -1,0 +1,8 @@
+{
+  "name": "Mizan Al-Tayyibat",
+  "description": "نظام غذائي متطور يعتمد على ميزان الطيبات للدكتور ضياء العوضي لتقييم الأطعمة.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
