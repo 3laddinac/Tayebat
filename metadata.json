@@ -1,6 +1,6 @@
 {
-  "name": "Mizan Al-Tayyibat",
-  "description": "نظام غذائي متطور يعتمد على ميزان الطيبات للدكتور ضياء العوضي لتقييم الأطعمة.",
+  "name": "ميزان الطيبات",
+  "description": "تصنيف الأطعمة وفق نظام الطيبات للدكتور ضياء العوضي – يحدد ما هو مسموح (طيبات) وما هو ممنوع (خبائث) مع شرح الأسباب.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
