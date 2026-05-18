@@ -15,6 +15,7 @@ interface HistoryItem {
   status: "allowed" | "prohibited" | "unknown";
 }
 
+
 const QUICK_TAGS = [
   { label: "الفراخ", query: "هل الفراخ مسموحة في نظام الطيبات؟" },
   { label: "الأرز الأبيض", query: "ما هو حكم الأرز الأبيض في الطيبات؟" },

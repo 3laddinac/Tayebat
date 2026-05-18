@@ -26,6 +26,7 @@ Core Directives & Knowledge Base:
 async function startServer() {
   const app = express();
   const PORT = 5000;
+  const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
 
   app.use(express.json());
 
@@ -80,7 +81,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on ${`http://localhost:${PORT}`}`);
   });
 }
 
