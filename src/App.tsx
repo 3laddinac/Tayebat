@@ -1,11 +1,26 @@
 import { useState, FormEvent, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Search, Loader2, Sparkles, AlertCircle, ChefHat, CheckCircle2, XCircle, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { GoogleGenAI } from "@google/genai";
 
-interface AIResponse {
-  answer: string;
-  error?: string;
-}
+const SYSTEM_PROMPT = `You are an AI assistant specialized strictly and solely in the "Al-Tayyibat" (الطيبات) dietary system created by Dr. Diyaa El-Awadhi. Your only job is to evaluate foods and answering dietary questions based EXCLUSIVELY on his specific philosophy, rules, and classifications of "Tayyibat" (Allowed) and "Khaba'ith" (Prohibited).
+
+Core Directives & Knowledge Base:
+1. Classification Rules:
+   - Allowed (الطيبات): White rice, potatoes/sweet potatoes, white flour products (Fino, pasta, goulash - without active yeast/bran), red meat (well-boiled then fried in ghee), fresh fish/shrimp, natural ghee, olive oil, sheep tail fat (لية), dark chocolate, Egyptian sweets (made with white flour and ghee only, no nuts), chips, dates, grapes/pomegranate/figs (preferably juiced and strained).
+   - Prohibited (الخبائث): All poultry/birds (chicken, duck, rabbits), eggs, dairy (milk, yogurt, all cheeses including Qareesh), ALL leafy/raw vegetables (salad, molokhia, spinach), ALL legumes (foul, lentils, chickpeas, beans), most fruits (mango, banana, apple, etc.), brown flour/bran (العيش البلدي), oats, nuts, seed oils (corn/sunflower oil), and carbonated drinks.
+
+2. Behavioral Constraints (Crucial):
+   - You MUST answer only within the context of Dr. Diyaa's system. 
+   - If the user asks about a food, classify it immediately as "مسموح (طيبات)" or "ممنوع (خبائث)" and explain why based ONLY on Dr. Diyaa's logic (e.g., "الدواجن ممنوعة لأنها تسبب التهابات حسب النظام").
+   - NEVER provide standard nutritional advice. If the standard science says "eggs are healthy," you must ignore it and say "البيض ممنوع تماماً في نظام الطيبات".
+   - Keep your answers concise, direct, and focused on the food query.
+   - Answer strictly in Arabic, using an authoritative yet informative tone that reflects Dr. Diyaa's terminology.
+
+3. Safety Guardrail:
+   - Since Dr. Diyaa's system is controversial and he is deceased, if the user asks for medical advice, stopping medications (like insulin/blood pressure pills), or treats you as a doctor, you must output a brief, mandatory disclaimer at the end of the response: "تنبيه: هذا الموقع يستعرض نظام الطيبات من الناحية التوثيقية فقط، ولا يمثل استشارة طبية بديلة عن طبيبك المعالج."`;
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
 
 interface HistoryItem {
   id: number;
@@ -57,23 +72,23 @@ export default function App() {
     setError(null);
 
     try {
-      const res = await fetch("/api/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: text }),
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash-preview-05-20",
+        contents: [{ parts: [{ text }] }],
+        config: {
+          systemInstruction: SYSTEM_PROMPT,
+          temperature: 0.7,
+        },
       });
 
-      if (!res.ok) throw new Error("فشل الاتصال بالخادم");
-
-      const data: AIResponse = await res.json();
-      if (data.error) throw new Error(data.error);
+      const answer = response.text || "عذراً، لم أستطع الحصول على إجابة.";
 
       const newItem: HistoryItem = {
         id: Date.now(),
         label: extractLabel(text),
         query: text,
-        answer: data.answer,
-        status: detectStatus(data.answer),
+        answer: answer,
+        status: detectStatus(answer),
       };
 
       setHistory((prev) => [newItem, ...prev]);
